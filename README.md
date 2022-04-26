@@ -8,15 +8,15 @@ int idleSec = 6;            // 当某个线程空闲6秒时，将退出
 threadpool::ThreadPool pool(initThreadCount, maxThreadCount, idleSec);
 
 // 向线程池中添加任务
-pool.AddTask([](void* arg){
+pool.AddTask([](){
   printf("this is task1.\n");
 });
 
-pool.AddTask([](void* arg){
+pool.AddTask([](){
   printf("this is task2.\n");
 });
 
-pool.AddTask([](void* arg){
+pool.AddTask([](){
   printf("this is task3.\n");
 });
 ```

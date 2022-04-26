@@ -12,18 +12,18 @@ namespace threadpool
 
 class ThreadPool
 {
-    using TaskType = std::function<void (void*)>;
-
     static const int INIT_NUM = 1;
     static const int MAX_NUM = 4;
     static const int MAX_IDLE_TIME_SECOND = 6;
+
+    typedef std::function<void()> Task;
 public:
     ThreadPool(int initNum, int maxNum, int idleSec);
     ThreadPool();
     ~ThreadPool();
 
 public:
-    void AddTask(const TaskType& task, void* arg);
+    void AddTask(const Task& task);
 
 private:
     void Init();
@@ -35,7 +35,7 @@ private:
     int _maxNum;
     int _idleSec;
     bool _stop;
-    std::queue<std::pair<TaskType, void*>> _taskQueue;
+    std::queue<Task> _taskQueue;
     std::vector<std::thread*> _pool;
     std::mutex _mutex;
     std::condition_variable _cond;

@@ -65,11 +65,11 @@ ThreadPool::~ThreadPool()
 }
 
 
-void ThreadPool::AddTask(const TaskType& task, void* arg)
+void ThreadPool::AddTask(const Task& task)
 {
     {
         std::lock_guard<std::mutex> lock(_mutex);
-        _taskQueue.emplace(task, arg);
+        _taskQueue.emplace(task);
     }
    
     _cond.notify_one();
@@ -101,7 +101,7 @@ void ThreadPool::PoolGrow()
 void ThreadPool::ThreadRoutine(int index)
 {
     while(1){
-        std::pair<TaskType, void*> task(nullptr, 0);
+        Task task;
         {
             std::cv_status waitStatus = std::cv_status::no_timeout;
             std::unique_lock<std::mutex> lock(_mutex);
@@ -110,7 +110,7 @@ void ThreadPool::ThreadRoutine(int index)
                 waitStatus =  _cond.wait_for(lock, std::chrono::seconds(_idleSec));
             }
             if(!_taskQueue.empty()){
-                task = _taskQueue.front();
+                task = std::move(_taskQueue.front());
                 _taskQueue.pop();
             }else if(_stop){
                 break;
@@ -126,9 +126,9 @@ void ThreadPool::ThreadRoutine(int index)
             }
         }
 
-        if(task.first != nullptr){
+        if(task != nullptr){
             ++_busyCount;
-            task.first(task.second);
+            task();
             --_busyCount;
         }
     }

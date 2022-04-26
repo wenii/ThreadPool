@@ -17,10 +17,10 @@ int main()
         threadpool::ThreadPool pool(1, 4, 6);
         int n = 10000;
         while(n--){
-            pool.AddTask([&](void* arg){
+            pool.AddTask([&](){
                 ++count;
                 std::this_thread::sleep_for(std::chrono::microseconds(GetRandomTime(1000)));
-            }, nullptr);
+            });
             std::this_thread::sleep_for(std::chrono::microseconds(GetRandomTime(100)));
         }
 
@@ -28,10 +28,10 @@ int main()
 
         n = 10000;
         while(n--){
-            pool.AddTask([&](void* arg){
+            pool.AddTask([&](){
                 ++count;
                 std::this_thread::sleep_for(std::chrono::microseconds(GetRandomTime(1000)));
-            }, nullptr);
+            });
             std::this_thread::sleep_for(std::chrono::microseconds(GetRandomTime(100)));
         }
     }
